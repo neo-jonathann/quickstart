@@ -73,3 +73,58 @@
   opacity: 0.85;
   font-size: 14px;
 }
+
+.err {
+  color: #b91c1c;
+  background: rgba(185, 28, 28, 0.08);
+  border: 1px solid rgba(185, 28, 28, 0.25);
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+.meta {
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.download {
+  display: inline-flex;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text-h);
+  text-decoration: none;
+  border: 1px solid var(--border);
+}
+
+.player {
+  width: 860px;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+}
+
+.deck {
+  width: 860px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.deck pre {
+  margin: 10px 0 0;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.4;
+}
