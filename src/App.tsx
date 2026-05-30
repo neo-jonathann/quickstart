@@ -3,14 +3,13 @@ import './App.css'
 
 const AAPL_DRIVE_FILE_ID = '1V83vQZdX78ZvRlnDUbBbu9rYNWtBxzcs'
 const AAPL_VIDEO_URL = `https://drive.google.com/uc?export=download&id=${AAPL_DRIVE_FILE_ID}`
-const AAPL_DRIVE_VIEW_URL = `https://drive.google.com/file/d/${AAPL_DRIVE_FILE_ID}/view`
-
 function App() {
   const [ticker, setTicker] = useState('')
+  const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
 
-  function onGenerate() {
+  async function onGenerate() {
     const t = ticker.trim().toUpperCase()
     if (!t) return
 
@@ -18,11 +17,14 @@ function App() {
     setVideoUrl(null)
 
     if (t !== 'AAPL') {
-      setErr('Only AAPL is available right now. Try AAPL.')
+      setErr('Please try again.')
       return
     }
 
+    setLoading(true)
+    await new Promise((r) => setTimeout(r, 3000))
     setVideoUrl(AAPL_VIDEO_URL)
+    setLoading(false)
   }
 
   return (
@@ -52,22 +54,18 @@ function App() {
               setTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9.\-]/g, ''))
             }
           />
-          <button className="primary" type="submit" disabled={!ticker.trim()}>
-            Get video
+          <button className="primary" type="submit" disabled={!ticker.trim() || loading}>
+            {loading ? 'Generating…' : 'Get video'}
           </button>
         </form>
 
-        <div className="hint">Available: AAPL</div>
-
         {err && <div className="err">{err}</div>}
+        {loading && !err && <div className="meta">Generating now. Please wait</div>}
 
         {videoUrl && (
           <div className="result">
             <a className="download" href={videoUrl} download target="_blank" rel="noreferrer">
               Download video
-            </a>
-            <a className="download" href={AAPL_DRIVE_VIEW_URL} target="_blank" rel="noreferrer">
-              Open in Google Drive
             </a>
           </div>
         )}
