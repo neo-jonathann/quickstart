@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 
-const AAPL_DRIVE_FILE_ID = '1V83vQZdX78ZvRlnDUbBbu9rYNWtBxzcs'
-const AAPL_VIDEO_URL = `https://drive.google.com/uc?export=download&id=${AAPL_DRIVE_FILE_ID}`
+const AAPL_VIDEO_URL = `/api/download?ticker=AAPL`
 
 function App() {
   const [ticker, setTicker] = useState('')
@@ -18,7 +17,7 @@ function App() {
     setVideoUrl(null)
 
     if (t !== 'AAPL') {
-      setErr('Only AAPL is available right now. Try AAPL.')
+      setErr('Please try again.')
       return
     }
 
@@ -105,20 +104,6 @@ function App() {
               <div>
                 <div className="outputTitle">Result</div>
                 <div className="outputSub">Download is unlocked.</div>
-              </div>
-              <button
-                className="ghost"
-                type="button"
-                onClick={() => navigator.clipboard.writeText(videoUrl)}
-              >
-                Copy URL
-              </button>
-            </div>
-
-            <div className="codeBlock">
-              <div className="codeLine">
-                <span className="codeLabel">download_url</span>
-                <span className="codeValue">{videoUrl}</span>
               </div>
             </div>
 
