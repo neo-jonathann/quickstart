@@ -51,6 +51,30 @@ function App() {
           </p>
         </div>
 
+        <section className="metrics" aria-label="System metrics">
+          <div className="metricCard">
+            <div className="metricTop">
+              <div className="metricLabel">Model Response Time</div>
+              <span className="pulseDot" aria-hidden="true" />
+            </div>
+            <div className="metricValue">124ms</div>
+          </div>
+          <div className="metricCard">
+            <div className="metricTop">
+              <div className="metricLabel">Token Efficiency</div>
+              <span className="metricIcon cyan" aria-hidden="true" />
+            </div>
+            <div className="metricValue">98.4%</div>
+          </div>
+          <div className="metricCard">
+            <div className="metricTop">
+              <div className="metricLabel">Active Session</div>
+              <span className="metricIcon violet" aria-hidden="true" />
+            </div>
+            <div className="metricValue">Phi-4-mini</div>
+          </div>
+        </section>
+
         <form
           className="commandRow"
           onSubmit={(e) => {
@@ -112,6 +136,43 @@ function App() {
             </a>
           </section>
         )}
+
+        <section className="console" aria-label="Live stream console">
+          <div className="consoleHeader">
+            <div className="consoleTitle">Live Stream Console</div>
+            <div className="consoleHint">telemetry / logs</div>
+          </div>
+          <div className="consoleBody">
+            <div className="logLine">
+              <span className="logLevel info">[info]</span> Connected to Phi Quickstart Edge
+              API...
+            </div>
+            <div className="logLine">
+              <span className="logLevel success">[success]</span> System handshake complete.
+              Context window optimized.
+            </div>
+            <div className="logLine">
+              <span className="logLevel idle">[idle]</span> Awaiting user prompt...
+            </div>
+            {loading && (
+              <div className="logLine">
+                <span className="logLevel info">[info]</span> Executing generation pipeline...
+              </div>
+            )}
+            {videoUrl && (
+              <div className="logLine">
+                <span className="logLevel success">[success]</span> Artifact ready. Download
+                authorized.
+              </div>
+            )}
+            {err && (
+              <div className="logLine">
+                <span className="logLevel error">[error]</span> Validation failed. Request
+                rejected.
+              </div>
+            )}
+          </div>
+        </section>
       </main>
     </div>
   )
