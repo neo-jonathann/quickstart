@@ -32,7 +32,13 @@ function App() {
         body: JSON.stringify({ ticker: t }),
       })
       const j = await r.json().catch(() => null)
-      if (!r.ok) throw new Error(j?.error || 'Failed to start generation')
+      if (!r.ok) {
+        const details =
+          typeof j?.pixverse?.ErrMsg === 'string' && j.pixverse.ErrMsg
+            ? ` (${j.pixverse.ErrMsg})`
+            : ''
+        throw new Error(`${j?.error || 'Failed to start generation'}${details}`)
+      }
 
       setDeck(j.deck)
       setVideoId(j.video_id)

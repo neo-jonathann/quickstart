@@ -15,6 +15,15 @@ function safeJsonParse(s: string) {
   }
 }
 
+function uuidV4() {
+  if (typeof crypto?.randomUUID === 'function') return crypto.randomUUID()
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = Math.floor(Math.random() * 16)
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     res.statusCode = 405
@@ -112,11 +121,9 @@ export default async function handler(req: any, res: any) {
     typeof deck?.pixverse_prompt === 'string' && deck.pixverse_prompt.trim()
       ? deck.pixverse_prompt.trim()
       : `Create a clean motion-graphics explainer video about ${ticker}. Use a modern financial dashboard style.`
+  const pixversePromptSafe = pixversePrompt.length > 4500 ? pixversePrompt.slice(0, 4500) : pixversePrompt
 
-  const traceId =
-    typeof crypto?.randomUUID === 'function'
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random()}`
+  const traceId = uuidV4()
 
   const pixverseRes = await fetch(
     'https://app-api.pixverse.ai/openapi/v2/video/text/generate',
@@ -131,8 +138,9 @@ export default async function handler(req: any, res: any) {
         aspect_ratio: '16:9',
         duration: 5,
         model: 'v6',
-        prompt: pixversePrompt,
+        prompt: pixversePromptSafe,
         quality: '720p',
+        seed: 0,
       }),
     },
   )
@@ -146,11 +154,30 @@ export default async function handler(req: any, res: any) {
   }
 
   const pixverseJson: any = await pixverseRes.json()
+  const errCode = pixverseJson?.ErrCode
+  const errMsg = pixverseJson?.ErrMsg
+  if (typeof errCode === 'number' && errCode !== 0) {
+    res.statusCode = 502
+    res.setHeader('Content-Type', 'application/json')
+    res.end(
+      JSON.stringify({
+        error: `Pixverse error ${errCode}${typeof errMsg === 'string' && errMsg ? `: ${errMsg}` : ''}`,
+        pixverse: { ErrCode: errCode, ErrMsg: errMsg },
+      }),
+    )
+    return
+  }
+
   const videoId = pixverseJson?.Resp?.video_id
   if (typeof videoId !== 'number' && typeof videoId !== 'string') {
     res.statusCode = 502
     res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify({ error: 'Pixverse returned no video_id', details: pixverseJson }))
+    res.end(
+      JSON.stringify({
+        error: 'Pixverse returned no video_id',
+        pixverse: { ErrCode: errCode, ErrMsg: errMsg },
+      }),
+    )
     return
   }
 
@@ -159,4 +186,3 @@ export default async function handler(req: any, res: any) {
   res.setHeader('Cache-Control', 'no-store')
   res.end(JSON.stringify({ ticker, deck, video_id: videoId, trace_id: traceId }))
 }
-
